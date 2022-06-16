@@ -1,0 +1,21 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.166.1/containers/docker-existing-dockerfile
+{
+	"dockerFile": "../dockerfile",
+
+	"settings": {
+	},
+
+	"extensions": [
+        "ms-azuretools.vscode-docker"
+    ],
+
+    "runArgs": ["--gpus", "all", "--device=/dev/dxg",
+        "-v", "/usr/lib/wsl:/usr/lib/wsl",
+        "-v", "/mnt/wslg:/mnt/wslg",
+        "-e", "DISPLAY=${env:DISPLAY}",
+        "-e", "WAYLAND_DISPLAY=${env:WAYLAND_DISPLAY}",
+        "-e", "XDG_RUNTIME_DIR=${env:XDG_RUNTIME_DIR}", 
+        "-e", "PULSE_SERVER=${env:PULSE_SERVER}",
+        "-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
+}
