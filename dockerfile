@@ -8,6 +8,7 @@ RUN echo "deb http://http.us.debian.org/debian/ testing non-free contrib main" |
 RUN apt update && \
     apt -y upgrade && \
     apt -y install \
+        sudo \
         mingw-w64 \
         g++ \
         pkg-config \
@@ -21,6 +22,10 @@ RUN apt update && \
         libxkbcommon0 \
         mesa-utils
 
+# Setup default user
+ENV USER=developer
+RUN useradd --create-home -s /bin/bash -m $USER && echo "$USER:$USER" | chpasswd && adduser $USER sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN rustup target add x86_64-pc-windows-gnu && \
     cargo install cargo-expand && \
@@ -30,14 +35,11 @@ RUN rustup target add x86_64-pc-windows-gnu && \
     rustup component add clippy && \
     curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz -o /usr/bin/rust-analyzer.gz && \
     gzip -d /usr/bin/rust-analyzer.gz && \
-    chmod 755 /usr/bin/rust-analyzer
+    chown -R developer:developer /usr/bin/rust-analyzer && \
+    chmod 775 /usr/bin/rust-analyzer && \
+    chown -R developer:developer /usr/local/cargo/
 
 ENV LD_LIBRARY_PATH=/usr/lib/wsl/lib
-
-# Setup default user
-ENV USER=developer
-RUN useradd --create-home -s /bin/bash -m $USER && echo "$USER:$USER" | chpasswd && adduser $USER sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /home/$USER
 USER $USER
