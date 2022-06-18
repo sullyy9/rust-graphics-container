@@ -33,3 +33,11 @@ RUN rustup target add x86_64-pc-windows-gnu && \
     chmod 755 /usr/bin/rust-analyzer
 
 ENV LD_LIBRARY_PATH=/usr/lib/wsl/lib
+
+# Setup default user
+ENV USER=developer
+RUN useradd --create-home -s /bin/bash -m $USER && echo "$USER:$USER" | chpasswd && adduser $USER sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+WORKDIR /home/$USER
+USER $USER
